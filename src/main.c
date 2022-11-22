@@ -8,6 +8,13 @@
 #define MITIBUFFERSIZE 32
 
 /**
+ * @brief be careful to work with dates before 1970
+ * parsing date before 1970 is unreliable.
+ * We have to reset (hr, min, sec) of the `struct tm` after
+ * parsing date (YYYY-MM-DD, etc.) from string buffer.
+ */
+
+/**
  * @brief struct for miti; year[1975-2100],
  * day[1-32], month[1-12], weekday[1-7]
  *
@@ -36,6 +43,8 @@ int main(int argc, char *argv[]) {
   char buffer[MITIBUFFERSIZE];
   int yr, mon, day;
   int is_valid_date = 1;
+  // strptime("2010-10-23", "%Y-%m-%d", &current_date);
+
   // int status;
   // char *date_formats[] = {"%Y/%m/%d", "%Y-%m-%d","%Y.%m.%d"};
 
@@ -78,31 +87,52 @@ int main(int argc, char *argv[]) {
       free(date);
     }
 
-  } else if (argc == 4 && strcmp(argv[1], "patro") == 0) {
+  } else if (argc > 1 && strcmp(argv[1], "patro") == 0) {
     /**
      * @brief Show miti calendar for the given <year> <month>
      *
      */
-    sscanf(argv[2], "%d", &miti->year);
-    sscanf(argv[3], "%d", &miti->mon);
-    miti->day = 1;
+    int current_day;
+    if (argc == 4) {
+      sscanf(argv[2], "%d", &miti->year);
+      sscanf(argv[3], "%d", &miti->mon);
+      miti->day = 1;
+      current_day = 1;
+    } else {
+      T = time(NULL);
+      localtime_r(&T, &current_date);
+      // current_date = localtime_s(&T);
+      // strftime(buffer, MITIBUFFERSIZE, "%Y-%m-%d-%u", &current_date);
+      // printf("else date: %s\n", buffer);
+      date_to_miti(&current_date, miti);
+      // date = (struct tm *)malloc(sizeof(struct tm));
+      current_day = miti->day;
+      miti->day = 1;
+    }
     if (test_miti_validity(miti) == 1) {
       date = (struct tm *)malloc(sizeof(struct tm));
+      // printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+      // strfmiti(buffer, MITIBUFFERSIZE, miti, 1);
+      // printf("miti: %s\n", buffer);
+      // strftime(buffer, MITIBUFFERSIZE, "%Y-%m-%d-%u", date);
+      // printf("date: %s\n", buffer);
+      // printf("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
       miti_to_date(date, miti);
       // strftime(buffer, 32, "%Y-%m-%d", date);
-      // printf("AD: %s\n", buffer);
-      make_calendar(miti->year, miti->mon, 1,
+      make_calendar(miti->year, miti->mon, current_day,
                     miti_table[miti->year - MITI_FIRST_YEAR][miti->mon - 1],
                     date->tm_wday);
       free(date);
     }
-  } else if(argc == 2) {
+  } else if (argc == 2) {
     printf("Help:\n");
     printf("$ miti - Show today's miti\n");
     printf("$ miti ad <miti> - Convert given miti to AD\n");
     printf("$ miti bs <date> - Convert given date to BS\n");
-    printf("$ miti patro <year> <month> - Show Nepali calendar for given year/month\n");
-  } else  {
+    printf(
+        "$ miti patro <year> <month> - Show Nepali calendar for given "
+        "year/month\n");
+  } else {
     if (argc == 1) {
       /**
        * @brief No cmd arguments; return today's miti
@@ -110,7 +140,6 @@ int main(int argc, char *argv[]) {
        */
       T = time(NULL);
       current_date = *localtime(&T);
-      is_valid_date = 1;
       // strptime("1996-09-28", "%Y-%m-%d", &current_date);
     } else if (argc > 2 && strcmp(argv[1], "bs") == 0) {
       /**
@@ -126,8 +155,6 @@ int main(int argc, char *argv[]) {
       if (ret == NULL) {
         printf("Error occured while parsing date\n");
         is_valid_date = 0;
-      } else {
-        is_valid_date = 1;
       }
     }
     /**
@@ -168,6 +195,8 @@ void date_to_miti(struct tm *given_date_tm, struct miti *miti) {
   char buffer[MITIBUFFERSIZE];
   strptime(START_AD, "%Y-%m-%d", &start_ad_tm);
 
+  // strftime(buffer, MITIBUFFERSIZE, "%Y-%m-%d-%u", given_date_tm);
+  // printf("inside date_to_miti(): %s\n", buffer);
   /**
    * @brief Calculation of miti;
    * First, calculate the total # of days from a FIXED start date
@@ -230,7 +259,7 @@ void date_to_miti(struct tm *given_date_tm, struct miti *miti) {
 }
 
 void miti_to_date(struct tm *date, struct miti *miti) {
-  // char buffer[32];
+  char buffer[32];
   // strfmiti(buffer, 32, miti, 0);
   // printf("Miti: %s\n", buffer);
   int diff_year = miti->year - MITI_FIRST_YEAR;
@@ -253,8 +282,21 @@ void miti_to_date(struct tm *date, struct miti *miti) {
 
   // struct tm *date = (struct tm *)malloc(sizeof(struct tm));
   strptime(START_AD, "%Y-%m-%d", date);
+  // printf("year: %d mon: %d day: %d\n", date->tm_year, date->tm_mon,
+  // date->tm_mday);
   date->tm_mday += total_days;
+  /**
+   * @brief 
+   * IMPORTANT !!!
+   * Zero out the hour, min, sec of date because
+   * the date is prior 1970; otherwise garbage result
+   */
+  date->tm_hour = 0;
+  date->tm_min = 0;
+  date->tm_sec = 0;
   mktime(date);
+  // printf("year: %d mon: %d day: %d\n", date->tm_year, date->tm_mon,
+  // date->tm_mday);
   miti->wday = date->tm_wday + 1;
   // strfmiti(buffer, 32, miti, 0);
   // printf("Miti: %s\n", buffer);
