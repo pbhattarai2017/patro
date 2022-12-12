@@ -286,7 +286,7 @@ void miti_to_date(struct tm *date, struct miti *miti) {
   // date->tm_mday);
   date->tm_mday += total_days;
   /**
-   * @brief 
+   * @brief
    * IMPORTANT !!!
    * Zero out the hour, min, sec of date because
    * the date is prior 1970; otherwise garbage result
@@ -385,12 +385,12 @@ void make_calendar(int mitiYear, int mitiMonth, int mitiDay, int totalDays,
   for (int i = 0; i < 7; i++) {
     if (i >= firstWeekDay) {
       if (i == 6) {
-        // red color in saturday
+        // red foreground-color in saturday
         printf("\033[1;31m");
       }
       if (currentDay == mitiDay) {
-        // yellow color today
-        printf("\033[1;43m");
+        // yellow foreground in today
+        printf("\033[1;4;33m");
       }
       if (currentDay < 10) {
         printf(" ");
@@ -413,12 +413,12 @@ void make_calendar(int mitiYear, int mitiMonth, int mitiDay, int totalDays,
         return;
       }
       if (i == 6) {
-        // red color in saturday
+        // red foreground color in saturday
         printf("\033[1;31m");
       }
       if (currentDay == mitiDay) {
-        // yellow color today
-        printf("\033[1;43m");
+        // yellow foreground in today
+        printf("\033[1;4;33m");
       }
       if (currentDay < 10) {
         printf(" ");
