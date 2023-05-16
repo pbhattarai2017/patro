@@ -5,7 +5,9 @@ This is a terminal based patro app. It uses an array of nepali month lengths to 
 1. `$ make`
 2. Copy `build/main` to executable directory or create an alias. <br>
   example: `alias miti='.../build/main'` in  your `.bashrc` or `.bash_aliases` file.
-
+  
+Or, for automatic installation, 
+* `$ make install`
 #### Usage
 This program is terminal based, so the textual alignment may not the same in different systems.
 * `$ miti`  <br>
@@ -19,4 +21,7 @@ This program is terminal based, so the textual alignment may not the same in dif
 * `$ miti patro <year> <month>` <br>
   displays Nepali calendar for given <year> and <month> <br>
   example: `$ miti patro 2079 8` <br>
- 
+* `$ miti patro` <br>
+  displays Nepali calendar for current month <br>
+* `$ patro`<br>
+  displays Nepali calendar for current month
