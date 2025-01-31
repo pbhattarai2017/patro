@@ -2,17 +2,10 @@
 #define LIBPATRO_H_
                         
 extern const char *PATRO_START_BS;
-extern const char *PATRO_END_BS;
 
-/// @brief 2100 - 1975 + 1
 extern const int PATRO_YEAR_ARRAY_SIZE;
-extern const int PATRO_MITI_FIRST_YEAR;
-extern const int PATRO_MITI_LAST_YEAR;
 
 extern const char *PATRO_START_AD;
-extern const char *PATRO_END_AD;
-extern const int PATRO_DATE_FIRST_YEAR;
-extern const int PATRO_DATE_LAST_YEAR;
 
 extern const char *PATRO_weekDays[];
 
@@ -28,7 +21,7 @@ extern const char PATRO_miti_table[][12];
  */
 
 /**
- * @brief struct for miti; year[1975-2100],
+ * @brief struct for miti; year[2000-2100],
  * day[1-32], month[1-12], weekday[1-7]
  *
  */

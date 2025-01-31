@@ -5,6 +5,8 @@
 #include <time.h>
 
 #include "../include/patro/patro.h"
+#define MITI_FIRST_YEAR ((PATRO_START_BS[0] - '0') * 1000 + (PATRO_START_BS[1] - '0') * 100 + (PATRO_START_BS[2] - '0') * 10 + (PATRO_START_BS[3] - '0'))
+#define PATRO_MITI_LAST_YEAR MITI_FIRST_YEAR + PATRO_YEAR_ARRAY_SIZE - 1
 #define MITIBUFFERSIZE 32
 
 int main(int argc, char *argv[]) {
@@ -79,6 +81,8 @@ int main(int argc, char *argv[]) {
       // date = (struct tm *)malloc(sizeof(struct tm));
       current_day = miti->day;
       miti->day = 1;
+      // printf("DEBUG: %d %d %d\n", miti->year, current_day, miti->wday);
+      // printf(" ");
     }
     if (test_miti_validity(miti) == 1) {
       date = (struct tm *)malloc(sizeof(struct tm));
@@ -91,7 +95,7 @@ int main(int argc, char *argv[]) {
       miti_to_date(date, miti);
       // strftime(buffer, 32, "%Y-%m-%d", date);
       make_calendar(miti->year, miti->mon, current_day,
-                    PATRO_miti_table[miti->year - PATRO_MITI_FIRST_YEAR][miti->mon - 1],
+                    PATRO_miti_table[miti->year - MITI_FIRST_YEAR][miti->mon - 1],
                     date->tm_wday);
       free(date);
     }
